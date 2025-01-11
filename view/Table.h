@@ -6,6 +6,8 @@
 #include "View.h"
 #include "controller/Book.h"
 
+#define WM_SELECTBOOK 0x401
+
 class Table :
     public View
 {
@@ -18,12 +20,26 @@ public:
 
     Table(RECT rc)
         : dpiScaleX(1.0f),
-        dpiScaleY(1.0f),
-        parent_hwnd(nullptr),
-        m_hwnd(nullptr),
-        text_format(nullptr)
+          dpiScaleY(1.0f),
+          parent_hwnd(nullptr),
+          m_hwnd(nullptr),
+          render_target(nullptr),
+          text_brush(nullptr),
+          text_format_10pt(nullptr)
     {
         m_rcClient = rc;
+
+        WNDCLASSEX wc = {};
+
+        wc.cbSize = sizeof(wc);
+        wc.style = CS_HREDRAW | CS_VREDRAW;
+        wc.lpfnWndProc = WindowProc;
+        wc.hInstance = GetModuleHandle(nullptr);
+        wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
+        wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
+        wc.lpszClassName = L"TableWindowClass";
+
+        RegisterClassEx(&wc);
     }
 
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -32,15 +48,15 @@ public:
 
         if (uMsg == WM_CREATE)
         {
-            CREATESTRUCT* pCreate = (CREATESTRUCT*)lParam;
-            pThis = (Table*)pCreate->lpCreateParams;
-            SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pThis);
+            CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
+            pThis = static_cast<Table*>(pCreate->lpCreateParams);
+            SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
 
             pThis->m_hwnd = hwnd;
         }
         else
         {
-            pThis = (Table*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+            pThis = reinterpret_cast<Table*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
         }
 
         if (pThis)
@@ -60,8 +76,13 @@ private:
 
     LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+    void UpdateScrollInfo() const;
+
     float dpiScaleX;
     float dpiScaleY;
+
+    float scrolled = 0.0f;
+    float all_height = 0.0f;
 
     std::vector<Book> book_table;
 
@@ -69,7 +90,7 @@ private:
     HWND m_hwnd;
     ID2D1HwndRenderTarget* render_target;
     ID2D1SolidColorBrush* text_brush;
-    IDWriteTextFormat* text_format;
+    IDWriteTextFormat* text_format_10pt;
 
     static constexpr std::array<int, 7> column_size = {
         8, 2, 1, 2, 4, 1, 2
@@ -80,5 +101,7 @@ private:
     static constexpr int ROW_HEIGHT = 20;
     static constexpr int COLUMN_SIZE_SUM = 20;
     static constexpr int MARGIN = 10;
+
+    static constexpr int DEFAULT_SCROLL_HEIGHT = 100;
 };
 

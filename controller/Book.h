@@ -1,10 +1,17 @@
 #pragma once
 #include <string>
+#include <vector>
+
+struct Tag
+{
+    unsigned int id;
+    std::wstring name;
+};
 
 struct Book
 {
     unsigned int id;
-    unsigned int isbn;
+    unsigned long long isbn;
     std::wstring title;
     std::wstring titleRuby;
     std::wstring altTitle;
@@ -19,4 +26,6 @@ struct Book
     double ndc;
     std::wstring location1;
     std::wstring location2;
+    std::wstring url;
+    std::vector<Tag> tags;
 };
