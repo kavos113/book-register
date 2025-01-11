@@ -1,10 +1,17 @@
 #pragma once
+
+#ifndef UNICODE
+#define UNICODE
+#endif
+
+#include <Windows.h>
 #include <d2d1.h>
 #include <vector>
 #include <array>
+#include <tchar.h>
 
 #include "View.h"
-#include "controller/Book.h"
+#include "Book.h"
 
 #define WM_SELECTBOOK 0x401
 
@@ -18,7 +25,7 @@ public:
 
     void SetParentHWND(HWND hwnd);
 
-    Table(RECT rc)
+    explicit Table(RECT rc)
         : dpiScaleX(1.0f),
           dpiScaleY(1.0f),
           parent_hwnd(nullptr),
@@ -48,7 +55,7 @@ public:
 
         if (uMsg == WM_CREATE)
         {
-            CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
+            auto* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
             pThis = static_cast<Table*>(pCreate->lpCreateParams);
             SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
 

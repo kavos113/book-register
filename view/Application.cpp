@@ -1,5 +1,3 @@
-#include <windows.h>
-
 #include "Application.h"
 
 void Application::Init()

@@ -1,3 +1,7 @@
+#ifndef UNICODE
+#define UNICODE
+#endif
+
 #include "Detail.h"
 
 #include <sstream>

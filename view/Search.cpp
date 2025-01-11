@@ -1,3 +1,7 @@
+#ifndef UNICODE
+#define UNICODE
+#endif
+
 #include <windows.h>
 
 #include "Search.h"

@@ -4,8 +4,8 @@
 #include <ostream>
 #include <print>
 
+#include "Book.h"
 #include "View.h"
-#include "controller/Book.h"
 
 class Detail : public View
 {

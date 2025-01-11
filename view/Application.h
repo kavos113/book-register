@@ -1,4 +1,11 @@
 #pragma once
+
+#ifndef UNICODE
+#define UNICODE
+#endif
+
+#include <windows.h>
+
 #include "Detail.h"
 #include "Search.h"
 #include "Table.h"
