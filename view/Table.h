@@ -14,6 +14,7 @@
 #include "Book.h"
 
 #define WM_SELECTBOOK 0x401
+#define WM_UPDATEDB 0x402
 
 class Table :
     public View
@@ -22,6 +23,7 @@ public:
     void Init() override;
     void OnPaint() override;
     void OnResize() override;
+    void Update();
 
     void SetParentHWND(HWND hwnd);
 

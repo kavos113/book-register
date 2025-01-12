@@ -68,102 +68,104 @@ Detail::Detail(RECT rc)
 
     RegisterClassEx(&wc);
 
+    float now_height = 20.0f;
+
     title_rect = D2D1_RECT_F{
         20.0f,
-        20.0f,
-        static_cast<float>(m_rcClient.right - m_rcClient.left),
-        80.0f
+        now_height,
+        static_cast<float>(m_rcClient.right - m_rcClient.left) - 20.0f,
+        now_height += 160.0f
     };
 
     alt_title_rect = D2D1_RECT_F{
         20.0f,
-        80.0f,
+        now_height,
         static_cast<float>(m_rcClient.right - m_rcClient.left),
-        120.0f
+        now_height += 20.0f
     };
 
     tag_rect = D2D1_RECT_F{
         20.0f,
-        120.0f,
+        now_height,
         static_cast<float>(m_rcClient.right - m_rcClient.left),
-        160.0f
+        now_height += 40.0f
     };
 
     location1_rect = D2D1_RECT_F{
         20.0f,
-        160.0f,
+        now_height,
         static_cast<float>(m_rcClient.right - m_rcClient.left) / 2.0f,
-        200.0f
+        now_height + 60.0f
     };
 
     location2_rect = D2D1_RECT_F{
         static_cast<float>(m_rcClient.right - m_rcClient.left) / 2.0f,
-        160.0f,
+        now_height,
         static_cast<float>(m_rcClient.right - m_rcClient.left),
-        200.0f
+        now_height += 60.0f
     };
 
     creators_rect = D2D1_RECT_F{
         20.0f,
-        200.0f,
+        now_height,
         static_cast<float>(m_rcClient.right - m_rcClient.left),
-        240.0f
+        now_height += 40.0f
     };
 
     publisher_rect = D2D1_RECT_F{
         20.0f,
-        240.0f,
+        now_height,
         static_cast<float>(m_rcClient.right - m_rcClient.left),
-        280.0f
+        now_height += 40.0f
     };
 
     date_rect = D2D1_RECT_F{
         20.0f,
-        280.0f,
+        now_height,
         static_cast<float>(m_rcClient.right - m_rcClient.left),
-        320.0f
+        now_height += 40.0f
     };
 
     price_rect = D2D1_RECT_F{
         20.0f,
-        320.0f,
+        now_height,
         static_cast<float>(m_rcClient.right - m_rcClient.left) / 2.0f,
-        360.0f
+        now_height + 40.0f
     };
 
     pages_rect = D2D1_RECT_F{
         static_cast<float>(m_rcClient.right - m_rcClient.left) / 2.0f,
-        320.0f,
+        now_height,
         static_cast<float>(m_rcClient.right - m_rcClient.left),
-        360.0f
+        now_height += 40.0f
     };
 
     isbn_rect = D2D1_RECT_F{
         20.0f,
-        360.0f,
+        now_height,
         static_cast<float>(m_rcClient.right - m_rcClient.left) / 2.0f,
-        400.0f
+        now_height + 40.0f
     };
 
     ndc_rect = D2D1_RECT_F{
         static_cast<float>(m_rcClient.right - m_rcClient.left) / 2.0f,
-        360.0f,
+        now_height,
         static_cast<float>(m_rcClient.right - m_rcClient.left),
-        400.0f
+        now_height += 40.0f
     };
 
     url_rect = D2D1_RECT_F{
         20.0f,
-        400.0f,
+        now_height,
         static_cast<float>(m_rcClient.right - m_rcClient.left),
-        440.0f
+        now_height += 40.0f
     };
 
     series_rect = D2D1_RECT_F{
         20.0f,
-        440.0f,
+        now_height,
         static_cast<float>(m_rcClient.right - m_rcClient.left),
-        480.0f
+        now_height + 40.0f
     };
 }
 
@@ -195,7 +197,7 @@ void Detail::Init()
     ReleaseDC(parent_hwnd, screen);
 
     HRESULT hr = DXFactory::GetDWriteFactory()->CreateTextFormat(
-        L"BIZ UDPGothic",
+        L"Meiryo UI",
         nullptr,
         DWRITE_FONT_WEIGHT_NORMAL,
         DWRITE_FONT_STYLE_NORMAL,
@@ -225,7 +227,7 @@ void Detail::Init()
     }
 
     hr = DXFactory::GetDWriteFactory()->CreateTextFormat(
-        L"BIZ UDPGothic",
+        L"Meiryo UI",
         nullptr,
         DWRITE_FONT_WEIGHT_NORMAL,
         DWRITE_FONT_STYLE_NORMAL,
@@ -262,6 +264,13 @@ void Detail::OnPaint()
 
 void Detail::OnResize()
 {
+    if (render_target != nullptr)
+    {
+        D2D1_SIZE_U size = D2D1::SizeU(m_rcClient.right - m_rcClient.left, m_rcClient.bottom - m_rcClient.top);
+        render_target->Resize(size);
+    }
+
+    InvalidateRect(m_hwnd, nullptr, FALSE);
 }
 
 void Detail::SetParentHWND(HWND hwnd)
@@ -551,6 +560,28 @@ void Detail::SetBook(Book b)
         return;
     }
 
+    range = { .startPosition= 0, .length = static_cast<UINT32>(book.location1.size()) };
+    hr = location1_layout->SetFontWeight(DWRITE_FONT_WEIGHT_BOLD, range);
+    if (FAILED(hr))
+    {
+        OutputDebugString(L"Failed to set font weight\n");
+        return;
+    }
+
+    hr = location1_layout->SetFontSize(22.0f, range);
+    if (FAILED(hr))
+    {
+        OutputDebugString(L"Failed to set font size\n");
+        return;
+    }
+
+    hr = location1_layout->SetUnderline(true, range);
+    if (FAILED(hr))
+    {
+        OutputDebugString(L"Failed to set underline\n");
+        return;
+    }
+
     hr = DXFactory::GetDWriteFactory()->CreateTextLayout(
         book.location2.c_str(),
         static_cast<UINT32>(book.location2.size()),
@@ -562,6 +593,28 @@ void Detail::SetBook(Book b)
     if (FAILED(hr))
     {
         OutputDebugString(L"Failed to create text layout\n");
+        return;
+    }
+
+    range = { .startPosition= 0, .length = static_cast<UINT32>(book.location2.size()) };
+    hr = location2_layout->SetFontWeight(DWRITE_FONT_WEIGHT_BOLD, range);
+    if (FAILED(hr))
+    {
+        OutputDebugString(L"Failed to set font weight\n");
+        return;
+    }
+
+    hr = location2_layout->SetFontSize(22.0f, range);
+    if (FAILED(hr))
+    {
+        OutputDebugString(L"Failed to set font size\n");
+        return;
+    }
+
+    hr = location2_layout->SetUnderline(true, range);
+    if (FAILED(hr))
+    {
+        OutputDebugString(L"Failed to set underline\n");
         return;
     }
 

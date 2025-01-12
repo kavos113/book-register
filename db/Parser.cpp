@@ -52,7 +52,7 @@ Book Parser::Parse(const std::string &xml)
 
         return {
             0,
-            9784764904057,
+            0,
             title[0],
             title[1],
             altTitle[0],

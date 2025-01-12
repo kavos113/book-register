@@ -67,3 +67,66 @@ void Database::Insert(const Book &book)
 
     sqlite3_finalize(stmt);
 }
+
+std::vector<Book> Database::SelectAll()
+{
+    std::vector<Book> books;
+    char* err = nullptr;
+    int res = sqlite3_exec(db, SELECT_ALL, MultiSelectCallback, &books, &err);
+    if (res != SQLITE_OK)
+    {
+        std::cerr << "sqlite3_exec() failed: " << err << std::endl;
+        sqlite3_free(err);
+    }
+
+    return books;
+}
+
+int Database::MultiSelectCallback(void *data, int num_col, char **col, char **col_name)
+{
+    std::vector<Book> *books = static_cast<std::vector<Book>*>(data);
+    Book book = {};
+
+    for (int i = 0; i < num_col; i++)
+    {
+        if (strcmp(col_name[i], "id") == 0) {
+            book.id = atoi(col[i]);
+        } else if (strcmp(col_name[i], "isbn") == 0) {
+            book.isbn = atoll(col[i]);
+        } else if (strcmp(col_name[i], "title") == 0) {
+            book.title = GetWString(col[i]);
+        } else if (strcmp(col_name[i], "title_ruby") == 0) {
+            book.titleRuby = GetWString(col[i]);
+        } else if (strcmp(col_name[i], "alt_title") == 0) {
+            book.altTitle = GetWString(col[i]);
+        } else if (strcmp(col_name[i], "alt_title_ruby") == 0) {
+            book.altTitleRuby = GetWString(col[i]);
+        } else if (strcmp(col_name[i], "series") == 0) {
+            book.series = GetWString(col[i]);
+        } else if (strcmp(col_name[i], "series_ruby") == 0) {
+            book.seriesRuby = GetWString(col[i]);
+        } else if (strcmp(col_name[i], "creators") == 0) {
+            book.creators = GetWString(col[i]);
+        } else if (strcmp(col_name[i], "publisher") == 0) {
+            book.publisher = GetWString(col[i]);
+        } else if (strcmp(col_name[i], "date") == 0) {
+            book.date = GetWString(col[i]);
+        } else if (strcmp(col_name[i], "price") == 0) {
+            book.price = atoi(col[i]);
+        } else if (strcmp(col_name[i], "pages") == 0) {
+            book.pages = GetWString(col[i]);
+        } else if (strcmp(col_name[i], "ndc") == 0) {
+            book.ndc = atof(col[i]);
+        } else if (strcmp(col_name[i], "location1") == 0) {
+            book.location1 = GetWString(col[i]);
+        } else if (strcmp(col_name[i], "location2") == 0) {
+            book.location2 = GetWString(col[i]);
+        } else if (strcmp(col_name[i], "url") == 0) {
+            book.url = GetWString(col[i]);
+        }
+    }
+
+    books->push_back(book);
+
+    return 0;
+}

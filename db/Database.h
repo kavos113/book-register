@@ -12,8 +12,11 @@ public:
     static void Disconnect();
 
     static void Insert(const Book& book);
+    static std::vector<Book> SelectAll();
 private:
     static sqlite3* db;
+
+    static int MultiSelectCallback(void* data, int num_col, char** col, char** col_name);
 
     static constexpr char CREATE_TABLE[] = R"(
         CREATE TABLE IF NOT EXISTS books (
@@ -57,6 +60,8 @@ private:
             url
         ) VALUES (? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,?);
     )";
+
+    static constexpr char SELECT_ALL[] = "SELECT * FROM books;";
 };
 
 

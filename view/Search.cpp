@@ -17,9 +17,6 @@ void Search::SetParentHWND(HWND hwnd)
 
 void Search::Init()
 {
-    std::wstring msg = std::format(L"left = {}, right = {}, top = {}, bottom = {}\n", m_rcClient.left, m_rcClient.right, m_rcClient.top, m_rcClient.bottom);
-    OutputDebugString(msg.c_str());
-
     search_field = CreateWindowEx(
         0,
         L"EDIT",

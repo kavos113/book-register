@@ -1,0 +1,20 @@
+#include "resource.h"
+
+#ifndef UNICODE
+#define UNICODE
+#endif
+
+#include <windows.h>
+
+MYMENU MENU
+BEGIN
+    POPUP "&add"
+    BEGIN
+        MENUITEM "add\tCtrl+A", IDM_ADD
+    END
+END
+
+MYACCELERATORS ACCELERATORS
+BEGIN
+    "A", IDM_ADD, CONTROL, VIRTKEY
+END

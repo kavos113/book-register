@@ -11,27 +11,31 @@ include_directories(view)
 find_package(CURL REQUIRED)
 
 add_executable(book_register WIN32
-    controller/Book.h
-    network/Client.cpp
-    network/Client.h
-    view/Application.cpp
-    view/Application.h
-    view/Detail.cpp
-    view/Detail.h
-    view/DXFactory.cpp
-    view/DXFactory.h
-    view/Search.cpp
-    view/Search.h
-    view/Table.cpp
-    view/Table.h
+        controller/Book.h
+        network/Client.cpp
+        network/Client.h
+        view/Application.cpp
+        view/Application.h
+        view/Detail.cpp
+        view/Detail.h
+        view/DXFactory.cpp
+        view/DXFactory.h
+        view/Search.cpp
+        view/Search.h
+        view/Table.cpp
+        view/Table.h
         util.h
-    view/View.cpp
-    view/View.h
-    main.cpp
+        view/View.cpp
+        view/View.h
+        main.cpp
         db/Parser.cpp
         db/Parser.h
         db/Database.cpp
-        db/Database.h)
+        db/Database.h
+        view/resource.h
+        view/app.rc
+        view/AddDialog.cpp
+        view/AddDialog.h)
 
 target_compile_options(book_register PRIVATE /source-charset:utf-8 /execution-charset:utf-8)
 

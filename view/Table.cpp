@@ -9,6 +9,7 @@
 
 #include "Application.h"
 #include "DXFactory.h"
+#include "../db/Database.h"
 
 void Table::Init()
 {
@@ -30,29 +31,11 @@ void Table::Init()
     midashi.location1 = L"所在1";
     midashi.location2 = L"所在2";
 
-    Book book;
-    book.id = 1;
-    book.isbn = 9784041021070;
-    book.title = L"解析概論";
-    book.titleRuby = L"かいせきがいろん";
-    book.altTitle = L"Introduction to the Theory of Computation";
-    book.altTitleRuby = L"";
-    book.series = L"数学シリーズ";
-    book.seriesRuby = L"";
-    book.creators = L"高木 貞治";
-    book.publisher = L"岩波書店";
-    book.date = L"2006/12/20";
-    book.price = 3000;
-    book.pages = L"B5, 200p";
-    book.ndc = 511.6;
-    book.location1 = L"図書館";
-    book.location2 = L"どこかの棚";
-
     book_table.push_back(midashi);
-    book_table.push_back(book);
-    for (int i = 0; i < 100; ++i)
+
+    std::vector<Book> books = Database::SelectAll();
+    for (const auto& book : books)
     {
-        book.ndc++;
         book_table.push_back(book);
     }
 
@@ -111,6 +94,21 @@ void Table::Init()
     if (FAILED(hr))
     {
         OutputDebugString(L"Failed to set paragraph alignment\n");
+        return;
+    }
+
+    DWRITE_TRIMMING trimming = { DWRITE_TRIMMING_GRANULARITY_CHARACTER, 0, 0 };
+    hr = text_format_10pt->SetTrimming(&trimming, nullptr);
+    if (FAILED(hr))
+    {
+        OutputDebugString(L"Failed to set trimming\n");
+        return;
+    }
+
+    hr = text_format_10pt->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP);
+    if (FAILED(hr))
+    {
+        OutputDebugString(L"Failed to set word wrapping\n");
         return;
     }
 }
@@ -239,6 +237,7 @@ void Table::OnPaint()
 
 void Table::OnResize()
 {
+
 }
 
 void Table::SetParentHWND(HWND hwnd)
@@ -327,6 +326,10 @@ LRESULT Table::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             int y = GET_Y_LPARAM(lParam);
             int index = static_cast<int>((y - scrolled) / ROW_HEIGHT);
+            if (index < 0 || index >= book_table.size())
+            {
+                break;
+            }
             SendMessage(parent_hwnd, WM_SELECTBOOK, 0, reinterpret_cast<LPARAM>(&book_table[index]));
         }
         return 0;
@@ -345,4 +348,18 @@ void Table::UpdateScrollInfo() const
     info.fMask = SIF_POS;
     info.nPos = static_cast<int>(-scrolled * DEFAULT_SCROLL_HEIGHT / all_height);
     SetScrollInfo(m_hwnd, SB_VERT, &info, TRUE);
+}
+
+void Table::Update()
+{
+    Book midashi = book_table[0];
+    std::vector<Book> books = Database::SelectAll();
+    book_table.clear();
+    book_table.push_back(midashi);
+    for (const auto& book : books)
+    {
+        book_table.push_back(book);
+    }
+
+    InvalidateRect(m_hwnd, &m_rcClient, FALSE);
 }

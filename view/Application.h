@@ -9,6 +9,7 @@
 #include "Detail.h"
 #include "Search.h"
 #include "Table.h"
+#include "AddDialog.h"
 
 class Application
 {
@@ -36,18 +37,18 @@ public:
         {
             return pThis->HandleMessage(uMsg, wParam, lParam);
         }
-        else
-        {
-            return DefWindowProc(hwnd, uMsg, wParam, lParam);
-        }
+
+        return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
 
     Application(RECT rc)
         : m_hwnd(nullptr),
+        m_haccel(nullptr),
         rc(rc),
         search(Search({ MARGIN, MARGIN, (rc.right - rc.left - 3 * MARGIN) * 3 / 5 + MARGIN, 60 })),
         table(Table({ MARGIN, MARGIN * 2 + 60, (rc.right - rc.left - 3 * MARGIN) * 3 / 5 + MARGIN, (rc.bottom - rc.top)- MARGIN * 5})),
-        detail(Detail({MARGIN * 2 + (rc.right - rc.left - 3 * MARGIN) * 3 / 5, MARGIN, rc.right - rc.left - MARGIN, rc.bottom - rc.top - MARGIN * 5}))
+        detail(Detail({MARGIN * 2 + (rc.right - rc.left - 3 * MARGIN) * 3 / 5, MARGIN, rc.right - rc.left - MARGIN * 3, rc.bottom - rc.top - MARGIN * 5})),
+        addDialog(AddDialog({(rc.right - rc.left) / 2 - 100, (rc.bottom - rc.top) / 2 - 100, (rc.right - rc.left) / 2 + 500, (rc.bottom - rc.top) / 2 + 200}))
     {
         WNDCLASSEX wc = {};
 
@@ -58,11 +59,13 @@ public:
         wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
         wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
         wc.lpszClassName = L"ApplicationWindowClass";
+        wc.lpszMenuName = L"MYMENU";
 
         RegisterClassEx(&wc);
     }
 
     HWND Window() const { return m_hwnd; }
+    HACCEL Accel() const { return m_haccel; }
 
 private:
     static constexpr int MARGIN = 10;
@@ -70,10 +73,12 @@ private:
     LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     HWND m_hwnd;
+    HACCEL m_haccel;
     RECT rc;
 
     Search search;
     Table table;
     Detail detail;
+    AddDialog addDialog;
 };
 
