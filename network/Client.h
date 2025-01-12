@@ -31,5 +31,7 @@ public:
         curl_easy_cleanup(curl);
     }
 private:
+
+
     static constexpr const char* URL = "https://ndlsearch.ndl.go.jp/api/sru?operation=searchRetrieve&version=1.2&recordSchema=dcndl&onlyBib=true&recordPacking=xml&query=isbn=";
 };

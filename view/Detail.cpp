@@ -7,7 +7,7 @@
 #include <sstream>
 
 #include "DXFactory.h"
-#include "util.h"
+#include "../util.h"
 
 Detail::~Detail()
 {

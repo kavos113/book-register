@@ -367,3 +367,4 @@ FodyWeavers.xsd
 vcpkg_installed
 cmake-build-debug
 .idea
+*.db

@@ -11,7 +11,7 @@ struct Tag
 struct Book
 {
     unsigned int id;
-    unsigned long long isbn;
+    long long isbn;
     std::wstring title;
     std::wstring titleRuby;
     std::wstring altTitle;
